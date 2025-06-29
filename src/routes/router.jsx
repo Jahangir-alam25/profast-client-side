@@ -7,6 +7,11 @@ import Register from "../Pages/Authentication/Register/Register";
 import Coverage from "../Pages/Coverage/Coverage";
 import PrivateRoute from "./PrivateRoute";
 import SendParcel from "../Pages/SendParcel/SendParcel";
+import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
+import DashboardLayout from "../Layouts/DashboardLayout";
+import Payment from "../Pages/Dashboard/MyParcels/Payment/Payment";
+import PaymentHistory from "../Pages/Dashboard/PaymentHistory/PaymentHistory";
+import TrackParcel from "../Pages/Dashboard/TrackParcel/TrackParcel";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +47,30 @@ const router = createBrowserRouter([
         Component: Register,
       }
     ],
+  },
+   {
+    path: '/dashboard',
+    element: <PrivateRoute>
+      <DashboardLayout></DashboardLayout>
+    </PrivateRoute>,
+    children: [
+      {
+        path: 'myParcels',
+        Component: MyParcels
+      },
+        {
+        path: 'payment/:parcelId',
+        Component: Payment
+      },
+        {
+        path: 'paymentHistory',
+        Component: PaymentHistory
+      },
+      {
+        path: 'track',
+        Component: TrackParcel
+      }
+    ]
   }
 ]);
 

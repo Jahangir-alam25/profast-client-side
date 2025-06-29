@@ -1,46 +1,64 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import  useAuth  from '../../../Hooks/useAuth';
-
+import { Link, useLocation, useNavigate } from 'react-router';
+import SocialLogin from '../SocialLogin/SocialLogin';
+import useAuth from '../../../Hooks/useAuth';
 
 const Login = () => {
-    const {setUser, loginUser} = useAuth();
-    
-    
-    const {
-        register,
-        handleSubmit,
-
-    } = useForm()
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const {  loginUser,setUser } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const from = location.state?.from || '/';
 
     const onSubmit = data => {
-        console.log(data)
-        loginUser(data.email, data.password)
-        .then(result => {
-            const user = result.user;
-            console.log(user);
-            setUser(user);
-        })
-        .catch(error => console.error(error))
+         loginUser(data.email, data.password)
+            .then(result => {
+                console.log(result.user);
+                setUser(result.user);
+                navigate(from);
+            })
+            .catch(error => console.log(error))
     }
 
     return (
-
-
-        <form onSubmit={handleSubmit(onSubmit)} className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-            <h1 className='text-3xl p-4'>Login Please</h1>
+        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
             <div className="card-body">
-                <fieldset className="fieldset">
-                    <label className="label">Email</label>
-                    <input type="email" {...register("email", { required: true }) } className="input" placeholder="Email" />
-                    <label className="label">Password</label>
-                    <input type="password" {...register("password")} className="input" placeholder="Password" />
-                    <div><a className="link link-hover">Forgot password?</a></div>
-                    <button className="btn btn-neutral mt-4">Login</button>
-                </fieldset>
-            </div>
-        </form>
+                <h1 className="text-5xl font-bold">Please Login</h1>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <fieldset className="fieldset">
 
+                        <label className="label">Email</label>
+                        <input
+                            type="email"
+                            {...register('email')}
+                            className="input" placeholder="Email" />
+
+
+                        <label className="label">Password</label>
+                        <input
+                            type="password"
+                            {...register('password', {
+                                required: true,
+                                minLength: 6
+                            })}
+                            className="input" placeholder="Password" />
+                        {
+                            errors.password?.type === 'required' && <p className='text-red-500'>Password is required</p>
+                        }
+                        {
+                            errors.password?.type === 'minLength' && <p className='text-red-500'>Password Must be 6 characters or longer</p>
+                        }
+
+                        <div><a className="link link-hover">Forgot password?</a></div>
+
+                        <button className="btn btn-primary text-black mt-4">Login</button>
+                    </fieldset>
+                    <p><small>New to this website? <Link className="btn btn-link" to="/register">Register</Link></small></p>
+                </form>
+                <SocialLogin></SocialLogin>
+            </div>
+        </div>
     );
 };
 
